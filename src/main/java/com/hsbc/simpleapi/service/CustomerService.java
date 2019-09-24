@@ -1,12 +1,12 @@
 package com.hsbc.simpleapi.service;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.hsbc.simpleapi.model.Customer;
 import com.hsbc.simpleapi.dao.CustomerRepository;
-
-import javax.persistence.EntityNotFoundException;
 
 @Service
 public class CustomerService {
@@ -20,5 +20,10 @@ public class CustomerService {
 
     public Customer insert(Customer customer) {
         return customerRepository.save(customer);
+    }
+
+    public Customer getCustomerBy(long id) {
+        return customerRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Customer under given id does not exist."));
     }
 }
