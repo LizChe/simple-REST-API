@@ -1,5 +1,8 @@
 package com.hsbc.simpleapi.model;
 
+import javax.persistence.Embeddable;
+
+@Embeddable
 public class Address {
 
     private String city;
