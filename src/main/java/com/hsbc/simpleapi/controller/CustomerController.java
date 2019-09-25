@@ -1,5 +1,7 @@
 package com.hsbc.simpleapi.controller;
 
+import java.net.URI;
+
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.hsbc.simpleapi.model.Customer;
 import com.hsbc.simpleapi.service.CustomerService;
@@ -33,7 +36,7 @@ public class CustomerController {
     @GetMapping("{id}")
     public ResponseEntity<Customer> getCustomerById(@PathVariable("id") long id) {
         try {
-            return new ResponseEntity<>(customerService.getCustomerBy(id), HttpStatus.OK);
+            return ResponseEntity.ok().body(customerService.getCustomerBy(id));
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -41,6 +44,11 @@ public class CustomerController {
 
     @PostMapping
     public ResponseEntity<Customer> createCustomer(@RequestBody @Valid Customer customer) {
-        return new ResponseEntity<>(customerService.insert(customer), HttpStatus.CREATED);
+        Customer createdCustomer = customerService.insert(customer);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(createdCustomer.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(createdCustomer);
     }
 }
